@@ -1,8 +1,15 @@
 /// <reference types="node" />
 
 import "dotenv/config";
+import { readFileSync, writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import express from "express";
 import { AgentEngine } from "./agent.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const RULES_FILE_PATH = join(__dirname, "config", "rules.json");
 
 interface AlertWebhookBody {
   currentBalance?: number;
@@ -17,8 +24,20 @@ const SERVICE_TO_MERCHANT: Record<string, string> = {
 
 const app = express();
 app.use(express.json());
+app.use(express.static("public"));
 
 const agent = new AgentEngine();
+
+app.get("/api/rules", (_req, res) => {
+  const rules = readFileSync(RULES_FILE_PATH, "utf8");
+  res.type("json").send(rules);
+});
+
+app.post("/api/rules", (req, res) => {
+  const rawRules = JSON.stringify(req.body, null, 2);
+  writeFileSync(RULES_FILE_PATH, rawRules, "utf8");
+  res.json({ success: true });
+});
 
 app.post("/webhook/alert", async (req, res) => {
   const body: AlertWebhookBody = req.body ?? {};
