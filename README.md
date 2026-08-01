@@ -8,13 +8,14 @@ DevBudget Agent listens for low-balance alerts from services like **OpenAI**, **
 
 ## 🚨 The Problem
 
-Cloud services don't care what time it is. When API credits or cloud balances run out unexpectedly, applications fail immediately. 
+Cloud services don't care what time it is. When API credits or cloud balances run out unexpectedly, applications fail immediately.
 
 Common scenarios include:
+
 - ❌ OpenAI returns `429` or `insufficient_quota`
 - ❌ AWS credits are exhausted unexpectedly
 - ❌ Vercel usage reaches billing limits
-- ❌ A developer is forced to wake up at 3 AM just to approve a $20 payment
+- ❌ A developer is forced to wake up at **3 AM** just to approve a **$20** payment
 - ❌ Manual top-up workflows introduce unnecessary downtime
 
 ---
@@ -22,6 +23,7 @@ Common scenarios include:
 ## 💡 The Solution
 
 Instead of waking up an engineer, DevBudget Agent acts as an autonomous financial operator:
+
 1. Receives a low-balance webhook.
 2. Evaluates configurable spending rules.
 3. Verifies merchant and transaction limits.
@@ -33,13 +35,14 @@ Instead of waking up an engineer, DevBudget Agent acts as an autonomous financia
 
 ---
 
-## 🎛️ The Dashboard
+## 🎛️ Dashboard
 
-Configure spending policies in real-time through the web dashboard.
+Configure spending policies in real time through the web dashboard.
 
 ![Web Dashboard](docs/dashboard.png)
 
 The dashboard allows you to safely manage:
+
 - Balance thresholds
 - Maximum transaction amounts
 - Merchant allowlists
@@ -52,12 +55,12 @@ The dashboard allows you to safely manage:
 ![Architecture Diagram](docs/architecture.png)
 
 | Layer | Technology | Responsibility |
-|-------|------------|----------------|
-| **Web Dashboard** | HTML, JS, Express | Manage spending rules in real-time |
-| **Webhook Listener**| Express 5 | Receives low-balance alerts |
+| :--- | :--- | :--- |
+| **Web Dashboard** | HTML, JavaScript, Express | Manage spending rules in real time |
+| **Webhook Listener** | Express 5 | Receives low-balance alerts |
 | **Rules Engine** | TypeScript | Validates thresholds, allowlists, and limits |
 | **Prava Service** | Axios | Generates single-use virtual cards |
-| **Automator** | Playwright | Completes payment and captures receipt |
+| **Checkout Automator** | Playwright | Completes payment and captures a receipt |
 
 ---
 
@@ -86,23 +89,28 @@ Rules Engine
      Playwright Checkout Automation
                │
                ▼
-          Payment Successful
+        Payment Successful
                │
                ▼
-       Receipt Screenshot Saved
-🛡️ Safety & Guardrails (Zero-Trust Spending)
+     Receipt Screenshot Saved
+```
+
+---
+
+## 🛡️ Safety & Guardrails (Zero-Trust Spending)
+
 DevBudget follows a strict zero-trust spending model to ensure funds are never misused.
 
-✅ Single-use cards: Every transaction receives a brand-new virtual card that expires immediately after use.
+- ✅ **Single-use cards** — Every transaction receives a brand-new virtual card that expires immediately after use.
+- ✅ **Merchant lock** — Cards are restricted to a single approved merchant.
+- ✅ **Spending limit** — Each card is capped at exactly the approved transaction amount.
+- ✅ **Rules before money** — No virtual card is generated until every configured rule has been validated.
 
-✅ Merchant lock: Cards are cryptographically restricted to a single approved merchant.
+---
 
-✅ Spending limit: Each card is capped at exactly the approved transaction amount.
+## 📂 Project Structure
 
-✅ Rules before money: No virtual card is generated until every configured rule has been validated by the engine.
-
-📂 Project Structure
-Plaintext
+```text
 devbudget-agent/
 ├── public/
 │   └── index.html                 # Web Dashboard UI
@@ -122,60 +130,130 @@ devbudget-agent/
 ├── .env
 ├── package.json
 └── README.md
-▶️ Getting Started
-Prerequisites
-Node.js 18+
+```
 
-npm
+---
 
-Playwright (installed automatically via setup script if missing)
+## ▶️ Getting Started
 
-1. Clone the Repository
-Bash
-git clone [https://github.com/your-username/devbudget-agent.git](https://github.com/your-username/devbudget-agent.git)
+### Prerequisites
+
+- Node.js **18+**
+- npm
+- Playwright (installed automatically if required)
+
+---
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/devbudget-agent.git
 cd devbudget-agent
-2. Install Dependencies
-Bash
-npm install
-3. Configure Environment Variables
-Create a .env file in the project root:
+```
 
-Code snippet
+---
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+---
+
+### 3. Configure Environment Variables
+
+Create a `.env` file in the project root.
+
+```env
 PRAVA_API_KEY=pv_test_mock_key_12345
 PRAVA_ENVIRONMENT=sandbox
-4. Start the Web Server
-Bash
-npm run start:webhook
-Open your browser to http://localhost:3000 to configure your spending rules using the dashboard.
+```
 
-5. Run the Autonomous Demo
+---
+
+### 4. Start the Web Server
+
+```bash
+npm run start:webhook
+```
+
+Open your browser:
+
+```
+http://localhost:3000
+```
+
+Configure your spending rules using the dashboard.
+
+---
+
+### 5. Run the Autonomous Demo
+
 Open a second terminal and run:
 
-Bash
+```bash
 npm run demo
-Watch the magic happen: The demo will trigger a mock low-balance alert, validate your dashboard rules, generate a Prava virtual card, launch Chromium, complete the payment automatically, and save a checkout receipt screenshot!
+```
 
-⚙️ Example Webhook Payload
-HTTP
+The demo will:
+
+- Trigger a mock low-balance alert
+- Validate dashboard rules
+- Generate a Prava virtual card
+- Launch Chromium with Playwright
+- Complete the payment automatically
+- Save a checkout receipt screenshot
+
+---
+
+## ⚙️ Example Webhook Payload
+
+```http
 POST /webhook/alert
 Content-Type: application/json
+```
 
+```json
 {
   "serviceName": "OpenAI",
   "currentBalance": 1.50
 }
-🚀 Future Improvements
-Multi-provider alert support
+```
 
-Slack and Discord notifications for successful top-ups
+---
 
-Transaction history and audit ledger UI
+## 🚀 Future Improvements
 
-Human-in-the-loop approval workflows for large purchases
+- Multi-provider alert support
+- Slack and Discord notifications
+- Transaction history and audit dashboard
+- Human approval workflow for high-value purchases
+- Docker containerization
+- Kubernetes deployment
+- Email receipts
+- Spending analytics
 
-Docker containerization for easier deployments
+---
 
-⚠️ Disclaimer
-This project is intended as a demonstration of autonomous payment orchestration using virtual cards. For production deployments, always secure API credentials, enable authentication, validate webhook signatures, and follow your organization's financial policies.
+## ⚠️ Disclaimer
 
-Built with ❤️ to ensure your infrastructure never stops because someone forgot to click "Add Credits".
+This project is intended as a demonstration of autonomous payment orchestration using virtual cards.
+
+For production deployments, always:
+
+- Secure API credentials
+- Enable authentication
+- Validate webhook signatures
+- Audit every transaction
+- Follow your organization's financial policies
+
+---
+
+## 📄 License
+
+MIT License
+
+---
+
+Built with ❤️ to ensure your infrastructure never stops because someone forgot to click **"Add Credits."**
