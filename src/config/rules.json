@@ -1,0 +1,6 @@
+{
+  "allowedMerchants": ["OpenAI API Top-Up", "AWS Credits", "Vercel Overage"],
+  "maxSingleTransaction": 50,
+  "autoTopUpThreshold": 5.00,
+  "topUpAmount": 20.00
+}
